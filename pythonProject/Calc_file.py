@@ -2,6 +2,9 @@ import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QPushButton, QGridLayout, QWidget, QHBoxLayout, QVBoxLayout
 from PyQt5.QtCore import QMetaObject
+import re
+
+#print(re.findall('(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?', '35-234-52'))
 
 class CalcWindow(QMainWindow):
     def __init__(self):
@@ -9,7 +12,7 @@ class CalcWindow(QMainWindow):
         self.initUI() #при создании экземляра класса, применяем к нему настройки UI
         self.setEnabled(True)
         self.resize(500, 620)
-        self.is_equal = False
+
     def initUI(self):
         #self.setEnabled(True)
         #self.setGeometry(220, 220, 500, 620) #в точке 1, 2, выводим окно с размерами 3, 4
@@ -50,11 +53,19 @@ class CalcWindow(QMainWindow):
 
         self.res_label = QtWidgets.QLabel(self.horizontalLayoutWidget)
         self.res_eq_label = QtWidgets.QLabel(self.horizontalLayoutWidget)
+        horizontalLayout.setContentsMargins(0, 0, 0, 0)
+
+
+        self.res_label.setWordWrap(True)
+        self.res_label.setMargin(1)
+        self.res_label.setScaledContents(True)
+        self.res_eq_label.setWordWrap(True)
+        self.res_eq_label.setScaledContents(True)
 
         self.eq_label = QtWidgets.QLabel(self.verticalLayoutWidget)
 
-        horizontalLayout.addWidget(self.res_eq_label)
-        horizontalLayout.addWidget(self.res_label)
+        horizontalLayout.addWidget(self.res_eq_label, stretch=1)
+        horizontalLayout.addWidget(self.res_label, stretch=1)
 
         self.gridLayoutWidget = QWidget(self.verticalLayoutWidget)
         grid = QGridLayout(self.gridLayoutWidget)
@@ -231,10 +242,12 @@ class CalcWindow(QMainWindow):
         #self.retranslateUi(CalcWindow)
 
         #QMetaObject.connectSlotsByName(QCalcWindow)
+        self.result_showed = False
 
         self.add_functions()
 
     def add_functions(self):
+        #numbers
         self.button_0.clicked.connect(
             lambda: self.write_number(self.button_0.text()))
         self.button_1.clicked.connect(
@@ -255,35 +268,96 @@ class CalcWindow(QMainWindow):
             lambda: self.write_number(self.button_8.text()))
         self.button_9.clicked.connect(
             lambda: self.write_number(self.button_9.text()))
-
+        #symbols
         self.button_plus.clicked.connect(
-            lambda: self.write_symblol(self.button_plus.text()))
+            lambda: self.write_symbol(self.button_plus.text()))
         self.button_minus.clicked.connect(
-            lambda: self.write_symblol(self.button_minus.text()))
+            lambda: self.write_symbol(self.button_minus.text()))
         self.button_mul.clicked.connect(
-            lambda: self.write_symblol(self.button_mul.text()))
+            lambda: self.write_symbol(self.button_mul.text()))
         self.button_div.clicked.connect(
-            lambda: self.write_symblol(self.button_div.text()))
+            lambda: self.write_symbol(self.button_div.text()))
         self.button_dot.clicked.connect(
-            lambda: self.write_symblol(self.button_dot.text()))
+            lambda: self.write_symbol(self.button_dot.text()))
 
-        #self.button_eq.clicked.connect(self.get_results)
+        self.button_eq.clicked.connect(self.result)
+
+        self.button_CE.clicked.connect(self.cls)
+
+        self.button_percent.clicked.connect(self.percentage)
+
+        self.button_sym.clicked.connect(self.change_sign)
 
     def write_number(self, number):
-        if self.eq_label.text() == 'Введите выражение' or self.is_equal == True:
+        if self.eq_label.text() == 'Введите выражение' or self.result_showed == True:
             self.eq_label.setText('')
             self.eq_label.setText(number)
-            self.is_equal = False
-            print('in if')
+            self.result_showed = False
+            #print('in if')
         else:
             self.eq_label.setText(self.eq_label.text() + number)
-            print('in else')
+            #print('in else')
     def write_symbol(self, symbol):
+        #print(str(self.eq_label.text())[-1])
         if self.eq_label.text()[-1].isdigit():
-            print(self.eq_label.text()[-1])
             self.eq_label.setText(self.eq_label.text() + symbol)
         else:
-            self.eq_label.setText(self.eq_label.text()[-1].replace(symbol))
+            self.eq_label.setText(self.eq_label.text()[:-1] + symbol)
+
+    def result(self):
+        if self.result_showed == False and self.eq_label.text() != 'Введите выражение': #подумать!
+            res = eval(self.eq_label.text())
+
+            font_res = QtGui.QFont()
+            font_res.setBold(True)
+            if int(30*14/len(str(res))) <30:
+                size = int(30*14/len(str(res)))
+            else:
+                size = 30
+            font_res.setPointSize(size)
+
+            self.res_label.setFont(font_res)
+            #self.res_label.setFont(QtGui.QFont().setPointSize(int(30/(len(self.res_label.text()))*14)))
+            self.res_label.setText(str(res))
+            self.eq_label.setText(str(res))
+
+
+    def cls(self):
+        self.eq_label.setText('Введите выражение')
+        self.res_label.setText('0')
+
+    def percentage(self):
+        try:
+            current_text = str(self.eq_label.text())
+            number = re.findall('(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?', current_text)[-2]
+            number_percentage = re.findall('(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?', current_text)[-1]
+            current_symbol = re.findall('\W', current_text)[-1]
+            res_percentage = float(number)*float(number_percentage)/100
+            print(number, number_percentage, current_symbol, res_percentage)
+            self.eq_label.setText(''.join(current_text.split(current_symbol)[:-1:])+str(current_symbol)+str(res_percentage))
+        except:
+            pass
+    def change_sign(self):
+        try:
+            current_text = str(self.eq_label.text())
+            number_changed = re.findall('(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?', current_text)[-1]
+            if current_text.isdigit():
+                self.eq_label.setText(str("-") + current_text)
+            else:
+                current_symbol = re.findall('\W', current_text)[-1]
+
+                if current_symbol in "*/":
+                    self.eq_label.setText(
+                        ''.join(current_text.split(current_symbol)[:-1:]) + str(current_symbol) + str('-') + str(number_changed))
+                elif current_symbol == '+':
+                    self.eq_label.setText(''.join(current_text.split(current_symbol)[:-1:]) + str("-") + str(number_changed))
+                elif current_symbol == '-':
+                    self.eq_label.setText(''.join(current_text.split(current_symbol)[:-1:]) + str("+") + str(number_changed))
+
+        except:
+            pass
+
+
 
 def window():
     #
