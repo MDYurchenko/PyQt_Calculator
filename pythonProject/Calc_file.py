@@ -4,15 +4,13 @@ from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QPushButton,
 from PyQt5.QtCore import QMetaObject
 import re
 
-#print(re.findall('(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?', '35-234-52'))
-
 class CalcWindow(QMainWindow):
     def __init__(self):
         super(CalcWindow, self).__init__()
         self.initUI() #при создании экземляра класса, применяем к нему настройки UI
-        self.setEnabled(True)
-        self.resize(500, 620)
-        self.setMinimumSize(500, 620)
+        self.resize(400, 620) #размер окна при его вызове
+        self.setMinimumSize(400, 620) #нельзя сделать окно меньше данного размера
+        #self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
 
     def initUI(self):
         #self.setEnabled(True)
@@ -21,30 +19,22 @@ class CalcWindow(QMainWindow):
         #2. Область ввода выражения
         #3. Область кнопок
 
-        #создадим стиль для области результата
-        font_res = QtGui.QFont()
-        font_res.setPointSize((30))
-        font_res.setBold(True)
-
-        # создадим стиль для записи вычисляемого выражения
-        font_eq = QtGui.QFont()
-        font_eq.setPointSize((15))
-        font_eq.setBold(True)
-
-        # создадим стиль для области кнопок
-        font_but = QtGui.QFont()
-        font_but.setPointSize((40))
-        font_but.setBold(True)
+        #структуру реализуем посредством VBoxLayout - основной виджет, в который помещаются:
+        #1.Поле резульатата
+        #2.Поле выражения
+        #3.Сетка кнопок
+        #Поле резульата выполняем с помощью VHBoxLayout, чтобы разделить область "=" и сам результат
+        #Сетку кнопок располагаем в нижней части VBoxLayout
 
         #запись ответа и выражения будут представлены классами QLabel:
-        # область результата, согласно макету, имеет постоянный знак "="
+        #область результата, согласно макету, имеет постоянный знак "="
 
         self.verticalLayoutWidget = QWidget(self)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(0, 0, 500, 620))
-        self.verticalLayoutWidget.setMinimumSize(500, 620)
+        self.verticalLayoutWidget.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(0, 20, 400, 600))
+        self.verticalLayoutWidget.setMinimumSize(400, 600)
         self.verticalLayout = QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)  # устанавливаем поля
-
 
         self.horizontalLayoutWidget = QWidget(self.verticalLayoutWidget)
         horizontalLayout = QHBoxLayout(self.horizontalLayoutWidget)
@@ -67,19 +57,13 @@ class CalcWindow(QMainWindow):
         horizontalLayout.addWidget(self.res_label, stretch=1)
 
         self.gridLayoutWidget = QWidget(self.verticalLayoutWidget)
-        self.gridLayoutWidget.setMinimumSize(500, 400)
+        self.gridLayoutWidget.setMinimumSize(300, 400)
         grid = QGridLayout(self.gridLayoutWidget)
 
         self.verticalLayout.addWidget(self.horizontalLayoutWidget)
         self.verticalLayout.addWidget(self.eq_label)
         self.verticalLayout.addWidget(self.gridLayoutWidget)
 
-        #применим стили для labels:
-        self.res_eq_label.setFont(font_res)
-        self.res_label.setFont(font_res)
-        self.eq_label.setFont(font_eq)
-
-        self.eq_label.setMaximumSize(500, 200)
         #теперь определим первоначальный текст на lables:
         self.res_label.setText('0')
         self.res_eq_label.setText('=')
@@ -89,12 +73,6 @@ class CalcWindow(QMainWindow):
         self.res_label.setAlignment(QtCore.Qt.AlignRight)
         self.res_eq_label.setAlignment(QtCore.Qt.AlignLeft)
         self.eq_label.setAlignment(QtCore.Qt.AlignRight)
-
-        #создаем сетку для размещения кнопок
-        #grid_layout = QWidget(self)
-        #grid_layout.setGeometry(QtCore.QRect(0, 250, 500, 370))
-
-        #grid.setGeometry(QtCore.QRect(0, 250, 500, 370))
 
         #создаем кнопки
 
@@ -189,40 +167,104 @@ class CalcWindow(QMainWindow):
         grid.addWidget(self.button_dot, 4, 1, 1, 1)
 
         self.button_eq = QPushButton(self.gridLayoutWidget)
-        #self.button_eq.setMinimumSize(90,80)
-        #self.button_eq.setMaximumSize(90,80)
         self.button_eq.setObjectName('=')
         self.button_eq.setText('=')
         grid.addWidget(self.button_eq, 4, 2, 1, 1)
 
-        #self.button_e = QPushButton(self.gridLayoutWidget)
-        # self.button_eq.setMinimumSize(90,80)
-        # self.button_eq.setMaximumSize(90, 80)
-        #self.button_e.setObjectName('ll')
-        #self.button_e.setText('ll')
-        #grid.addWidget(self.button_e, 3, 4, 1, 1)
+        #здесь устанавливаем минимальный размер кнопок
+        self.button_CE.setMinimumSize(40, 80)
+        self.button_sym.setMinimumSize(40, 80)
+        self.button_percent.setMinimumSize(40, 80)
+        self.button_div.setMinimumSize(40, 80)
+        self.button_7.setMinimumSize(40, 80)
+        self.button_8.setMinimumSize(40, 80)
+        self.button_9.setMinimumSize(40, 80)
+        self.button_mul.setMinimumSize(40, 80)
+        self.button_4.setMinimumSize(40, 80)
+        self.button_5.setMinimumSize(40, 80)
+        self.button_6.setMinimumSize(40, 80)
+        self.button_minus.setMinimumSize(40, 80)
+        self.button_1.setMinimumSize(40, 80)
+        self.button_2.setMinimumSize(40, 80)
+        self.button_3.setMinimumSize(40, 80)
+        self.button_plus.setMinimumSize(40, 160)
+        self.button_0.setMinimumSize(40, 80)
+        self.button_dot.setMinimumSize(40, 80)
+        self.button_eq.setMinimumSize(40, 80)
 
-        self.button_CE.setMinimumSize(80, 80)
-        self.button_sym.setMinimumSize(80, 80)
-        self.button_percent.setMinimumSize(80, 80)
-        self.button_div.setMinimumSize(80, 80)
-        self.button_7.setMinimumSize(80, 80)
-        self.button_8.setMinimumSize(80, 80)
-        self.button_9.setMinimumSize(80, 80)
-        self.button_mul.setMinimumSize(80, 80)
-        self.button_4.setMinimumSize(80, 80)
-        self.button_5.setMinimumSize(80, 80)
-        self.button_6.setMinimumSize(80, 80)
-        self.button_minus.setMinimumSize(80, 80)
-        self.button_1.setMinimumSize(80, 80)
-        self.button_2.setMinimumSize(80, 80)
-        self.button_3.setMinimumSize(80, 80)
-        self.button_plus.setMinimumSize(80, 160)
-        self.button_0.setMinimumSize(80, 80)
-        self.button_dot.setMinimumSize(80, 80)
-        self.button_eq.setMinimumSize(80, 80)
+        #стилизация окна
+        self.setStyleSheet("color: white;"
+                        "background-color: rgb(26,27,40);"
+                        "selection-color: yellow;"
+                        "selection-background-color: blue;")
 
+        # создадим шрифта для области результата
+        font_res = QtGui.QFont()
+        font_res.setPointSize((30))
+        font_res.setBold(True)
 
+        # создадим стиль шрифта для записи вычисляемого выражения
+        font_eq = QtGui.QFont()
+        font_eq.setPointSize((15))
+        font_eq.setBold(True)
+
+        # создадим стиль шрифта для кнопок
+        font_but = QtGui.QFont()
+        font_but.setPointSize((23))
+        font_but.setBold(False)
+        font_but.setFamily('Microsoft YaHei')
+
+        # применим стили для labels:
+        self.res_eq_label.setFont(font_res)
+        self.res_label.setFont(font_res)
+        self.eq_label.setFont(font_eq)
+
+        #создаем стиль для сетки кнопок с помощью CSS:
+        self.gridLayoutWidget.setStyleSheet("QPushButton {background-color: rgb(82, 201, 220); color: White; border-radius: 4px;}"
+                           "QPushButton:pressed {background-color:rgb(190,234,242);}")
+        #аналогично для кнопок, к которым применется другие стилистические требования
+        self.button_7.setStyleSheet("QPushButton {background-color: rgb(30, 36, 53); color: White; border-radius: 4px;}"
+                           "QPushButton:pressed {background-color:rgb(190,234,242);}")
+        self.button_8.setStyleSheet("QPushButton {background-color: rgb(30, 36, 53); color: White; border-radius: 4px;}"
+                                    "QPushButton:pressed {background-color:rgb(190,234,242);}")
+        self.button_9.setStyleSheet("QPushButton {background-color: rgb(30, 36, 53); color: White; border-radius: 4px;}"
+                                    "QPushButton:pressed {background-color:rgb(190,234,242);}")
+        self.button_4.setStyleSheet("QPushButton {background-color: rgb(30, 36, 53); color: White; border-radius: 4px;}"
+                                    "QPushButton:pressed {background-color:rgb(190,234,242);}")
+        self.button_5.setStyleSheet("QPushButton {background-color: rgb(30, 36, 53); color: White; border-radius: 4px;}"
+                                    "QPushButton:pressed {background-color:rgb(190,234,242);}")
+        self.button_6.setStyleSheet("QPushButton {background-color: rgb(30, 36, 53); color: White; border-radius: 4px;}"
+                                    "QPushButton:pressed {background-color:rgb(190,234,242);}")
+        self.button_1.setStyleSheet("QPushButton {background-color: rgb(30, 36, 53); color: White; border-radius: 4px;}"
+                                    "QPushButton:pressed {background-color:rgb(190,234,242);}")
+        self.button_2.setStyleSheet("QPushButton {background-color: rgb(30, 36, 53); color: White; border-radius: 4px;}"
+                                    "QPushButton:pressed {background-color:rgb(190,234,242);}")
+        self.button_3.setStyleSheet("QPushButton {background-color: rgb(30, 36, 53); color: White; border-radius: 4px;}"
+                                    "QPushButton:pressed {background-color:rgb(190,234,242);}")
+        self.button_0.setStyleSheet("QPushButton {background-color: rgb(30, 36, 53); color: White; border-radius: 4px;}"
+                                    "QPushButton:pressed {background-color:rgb(190,234,242);}")
+        self.button_dot.setStyleSheet("QPushButton {background-color: rgb(30, 36, 53); color: White; border-radius: 4px;}"
+                                    "QPushButton:pressed {background-color:rgb(190,234,242);}")
+        #ко всем кнопкам применяем стиль шрифта
+        self.button_CE.setFont(font_but)
+        self.button_sym.setFont(font_but)
+        self.button_percent.setFont(font_but)
+        self.button_div.setFont(font_but)
+        self.button_7.setFont(font_but)
+        self.button_8.setFont(font_but)
+        self.button_9.setFont(font_but)
+        self.button_mul.setFont(font_but)
+        self.button_4.setFont(font_but)
+        self.button_5.setFont(font_but)
+        self.button_6.setFont(font_but)
+        self.button_minus.setFont(font_but)
+        self.button_1.setFont(font_but)
+        self.button_2.setFont(font_but)
+        self.button_3.setFont(font_but)
+        self.button_plus.setFont(font_but)
+        self.button_0.setFont(font_but)
+        self.button_dot.setFont(font_but)
+        self.button_eq.setFont(font_but)
 
         self.verticalLayoutWidget.setLayout(self.verticalLayout)
 
@@ -266,11 +308,8 @@ class CalcWindow(QMainWindow):
             lambda: self.write_symbol(self.button_dot.text()))
 
         self.button_eq.clicked.connect(self.result)
-
         self.button_CE.clicked.connect(self.cls)
-
         self.button_percent.clicked.connect(self.percentage)
-
         self.button_sym.clicked.connect(self.change_sign)
 
     def write_number(self, number):
@@ -278,20 +317,19 @@ class CalcWindow(QMainWindow):
             self.eq_label.setText('')
             self.eq_label.setText(number)
             self.result_showed = False
-            #print('in if')
         else:
             self.eq_label.setText(self.eq_label.text() + number)
-            #print('in else')
     def write_symbol(self, symbol):
-        #print(str(self.eq_label.text())[-1])
-        if self.eq_label.text()[-1].isdigit():
-            self.eq_label.setText(self.eq_label.text() + symbol)
-        else:
-            self.eq_label.setText(self.eq_label.text()[:-1] + symbol)
+        if self.eq_label.text() != 'Введите выражение':
+            if self.eq_label.text()[-1].isdigit() and self.eq_label.text() != 'Введите выражение':
+                self.eq_label.setText(self.eq_label.text() + symbol)
+            else:
+                self.eq_label.setText(self.eq_label.text()[:-1] + symbol)
 
     def result(self):
         if self.result_showed == False and self.eq_label.text() != 'Введите выражение': #подумать!
             res = eval(self.eq_label.text())
+            self.result_showed = True
 
             font_res = QtGui.QFont()
             font_res.setBold(True)
@@ -302,10 +340,8 @@ class CalcWindow(QMainWindow):
             font_res.setPointSize(size)
 
             self.res_label.setFont(font_res)
-            #self.res_label.setFont(QtGui.QFont().setPointSize(int(30/(len(self.res_label.text()))*14)))
             self.res_label.setText(str(res))
             self.eq_label.setText(str(res))
-
 
     def cls(self):
         self.eq_label.setText('Введите выражение')
@@ -322,6 +358,7 @@ class CalcWindow(QMainWindow):
             self.eq_label.setText(''.join(current_text.split(current_symbol)[:-1:])+str(current_symbol)+str(res_percentage))
         except:
             pass
+
     def change_sign(self):
         try:
             current_text = str(self.eq_label.text())
@@ -344,14 +381,10 @@ class CalcWindow(QMainWindow):
                     while constant_text[-1] in '-+':
                         constant_text = constant_text[:-1:]
                     self.eq_label.setText(''.join(constant_text) + str("+") + str(number_changed))
-
         except:
             pass
 
-
-
 def window():
-    #
     app = QApplication(sys.argv)
     win = CalcWindow()
     win.show()
