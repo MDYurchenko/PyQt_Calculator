@@ -1,7 +1,6 @@
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QPushButton, QGridLayout, QWidget, QHBoxLayout, QVBoxLayout
-from PyQt5.QtCore import QMetaObject
+from PyQt5.QtWidgets import  QMainWindow, QApplication, QPushButton, QGridLayout, QWidget, QHBoxLayout, QVBoxLayout
 import re
 
 class CalcWindow(QMainWindow):
@@ -266,6 +265,27 @@ class CalcWindow(QMainWindow):
         self.button_dot.setFont(font_but)
         self.button_eq.setFont(font_but)
 
+        #шорткаты
+        self.button_CE.setShortcut(QtGui.QKeySequence("Del"))
+        self.button_sym.setShortcut(QtGui.QKeySequence("Ctrl+-"))
+        self.button_percent.setShortcut(QtGui.QKeySequence("Shift+5"))
+        self.button_div.setShortcut(QtGui.QKeySequence("/"))
+        self.button_7.setShortcut(QtGui.QKeySequence("7"))
+        self.button_8.setShortcut(QtGui.QKeySequence("8"))
+        self.button_9.setShortcut(QtGui.QKeySequence("9"))
+        self.button_mul.setShortcut(QtGui.QKeySequence("Shift+8"))
+        self.button_4.setShortcut(QtGui.QKeySequence("4"))
+        self.button_5.setShortcut(QtGui.QKeySequence("5"))
+        self.button_6.setShortcut(QtGui.QKeySequence("6"))
+        self.button_minus.setShortcut(QtGui.QKeySequence("-"))
+        self.button_1.setShortcut(QtGui.QKeySequence("1"))
+        self.button_2.setShortcut(QtGui.QKeySequence("2"))
+        self.button_3.setShortcut(QtGui.QKeySequence("3"))
+        self.button_plus.setShortcut(QtGui.QKeySequence("shift+="))
+        self.button_0.setShortcut(QtGui.QKeySequence("0"))
+        self.button_dot.setShortcut(QtGui.QKeySequence("."))
+        self.button_eq.setShortcut(QtGui.QKeySequence("Return"))
+
         self.verticalLayoutWidget.setLayout(self.verticalLayout)
 
         #QMetaObject.connectSlotsByName(QCalcWindow)
@@ -313,6 +333,14 @@ class CalcWindow(QMainWindow):
         self.button_sym.clicked.connect(self.change_sign)
 
     def write_number(self, number):
+        font_eq = QtGui.QFont()
+        font_eq.setBold(True)
+        if int(15 * 20 / len(str(self.eq_label.text()))) < 15:
+            size = int(15 * 20 / len(str(self.eq_label.text())))
+        else:
+            size = 15
+        font_eq.setPointSize(size)
+        self.eq_label.setFont(font_eq)
         if self.eq_label.text() == 'Введите выражение' or self.result_showed == True:
             self.eq_label.setText('')
             self.eq_label.setText(number)
@@ -333,8 +361,8 @@ class CalcWindow(QMainWindow):
 
             font_res = QtGui.QFont()
             font_res.setBold(True)
-            if int(30*14/len(str(res))) <30:
-                size = int(30*14/len(str(res)))
+            if int(30*10/len(str(res))) <30:
+                size = int(30*10/len(str(res)))
             else:
                 size = 30
             font_res.setPointSize(size)
