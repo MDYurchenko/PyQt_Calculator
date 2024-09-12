@@ -8,4 +8,5 @@ Simple calculator, that avalable to perform:
 * percentage estimation.
 
 ![alt text][logo]
+
 [logo]: https://github.com/MDYurchenko/PyQt_Calc_Yurchenko/blob/dev/Calculator.png "Скриншот калькулятора"
