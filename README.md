@@ -6,6 +6,6 @@ Simple calculator, that avalable to perform:
 * divivsion;
 * multiplying;
 * percentage estimation.
-![alt text][logo]
 
+![alt text][logo]
 [logo]: https://github.com/MDYurchenko/PyQt_Calc_Yurchenko/blob/dev/Calculator.png "Скриншот калькулятора"
